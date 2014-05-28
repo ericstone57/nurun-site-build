@@ -1,0 +1,92 @@
+server {
+        listen 80;
+        server_name efc.nurunci.com;
+
+        access_log /var/log/nginx/efc_access.log;
+        error_log /var/log/nginx/efc_error.log;
+
+        root /home/webown/sites/sha-lancome-efforless-chic-2;
+        index index.html;
+
+        # Deny all . files
+        location ~ /\. {
+                deny all;
+        }
+
+        location / {
+
+                location = / {
+                        try_files /index.html =404;
+                }
+
+                location = /bus {
+                        try_files /bus.html =404;
+                }
+
+                location = /echic1 {
+                        try_files /echic1/index.html =404;
+                }
+
+                location = /bus1 {
+                        try_files /echic1/bus.html =404;
+                }
+
+                location = /mechic1 {
+                        try_files /echic1/index_mobile.html =404;
+                }
+
+                location = /mbus1 {
+                        try_files /echic1/bus_mobile.html =404;
+                }
+
+                location = /efc_deploy.php {
+                        root /home/webown/nurun-scripts;
+                        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+                        include fastcgi_params;
+                        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                        send_timeout 1800;
+                        fastcgi_read_timeout 1800;
+                        fastcgi_pass 127.0.0.1:9001;
+                }
+
+                try_files $uri $uri/ =404;
+        }
+
+        location /api/ {
+                proxy_pass http://efcapi.nurunci.com/;
+        }
+}
+
+server {
+  listen 80;
+  server_name efcapi.nurunci.com;
+
+  access_log /var/log/nginx/efc_api_access.log;
+  error_log /var/log/nginx/efc_api_error.log;
+
+  root /home/webown/sites/sha-lancome-efforless-chic/web;
+  index index.php;
+
+  rewrite ^/index\.php/?(.*)$ /$1 permanent;
+
+  try_files $uri @rewriteapp;
+
+  location @rewriteapp {
+    rewrite ^(.*)$ /index.php/$1 last;
+  }
+
+  # Deny all . files
+  location ~ /\. {
+    deny all;
+  }
+
+  location ~ ^/index\.php(/|$) {
+    fastcgi_split_path_info ^(.+\.php)(/.*)$;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_index index.php;
+    send_timeout 1800;
+    fastcgi_read_timeout 1800;
+    fastcgi_pass 127.0.0.1:9001;
+  }
+}
