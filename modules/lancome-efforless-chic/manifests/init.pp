@@ -8,7 +8,7 @@ class lancome-efforless-chic {
 
   file {
     '/etc/nginx/sites-available/efc':
-      content  => template("lancome-efforless-chic/nginx-www.erb"),
+      content  => template("lancome-efforless-chic/nginx-dev.erb"),
       owner   => 'root',
       group   => 'root',
       notify  => Exec['enable-nginx-site'],
