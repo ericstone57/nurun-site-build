@@ -78,7 +78,7 @@ class martell-ddms {
             content => template("martell-ddms/nginx/${env}/drupal.conf.erb"),
             owner   => 'root',
             group   => 'root',
-            notify  => File['/etc/nginx/sites-available/ddms.conf'];
+            notify  => [File['/etc/nginx/sites-available/ddms.conf'], Service['nginx']];
         '/etc/nginx/sites-available/ddms.conf':
             content  => template("martell-ddms/nginx/${env}/ddms.conf.erb"),
             owner   => 'root',
